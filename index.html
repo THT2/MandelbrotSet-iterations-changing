@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mandelbrot-Set</title>
+</head>
+
+<body>
+    <canvas id="canvas" width="800" height="800"></canvas>
+
+    <script>
+        const canvas = document.getElementById("canvas");
+
+        const ctx = canvas.getContext("2d");
+
+        let maxIterations = 1;
+        let interval;
+
+        function mandelbrot(x, y) {
+            let real = x;
+            let imag = y;
+            for (let i = 0; i < maxIterations; i++) {
+                const real2 = real * real;
+                const imag2 = imag * imag;
+                if (real2 + imag2 > 4) {
+                    return i;
+                }
+                imag = 2 * real * imag + y;
+                real = real2 - imag2 + x;
+            }
+            return maxIterations;
+        }
+
+        function getColor(iterations) {
+            const hue = (iterations / maxIterations) * 360;
+            const saturation = 100;
+            const lightness = 50;
+            return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+        }
+
+        function drawMandelbrot() {
+            const width = canvas.width;
+            const height = canvas.height;
+
+            for (let x = 0; x < width; x++) {
+                for (let y = 0; y < height; y++) {
+                    const px = (x - width / 2) * 4 / width;
+                    const py = (y - height / 2) * 4 / height;
+
+                    const iterations = mandelbrot(px, py);
+                    const color = getColor(iterations);
+
+                    ctx.fillStyle = color;
+                    ctx.fillRect(x, y, 1, 1);
+                }
+            }
+        }
+
+        function updateIterations() {
+            maxIterations += 1;
+            clearInterval(interval);
+            drawMandelbrot();
+            interval = setInterval(updateIterations, 100);
+        }
+
+        drawMandelbrot();
+
+        interval = setInterval(updateIterations, 100);
+    </script>
+</body>
+
+</html>
